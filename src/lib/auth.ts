@@ -65,14 +65,23 @@ export const authService = {
 
   // Logout
   async logout(): Promise<void> {
+    console.log('🚪 Iniciando processo de logout');
+
     try {
+      console.log('📤 Enviando requisição de logout para API');
       await api.post('/auth/logout');
-    } catch {
+      console.log('✅ Logout realizado com sucesso na API');
+    } catch (error) {
+      console.warn(
+        '⚠️ Erro ao fazer logout na API, mas continuando limpeza local:',
+        error
+      );
       // Mesmo se der erro na API, limpar dados locais
-      // Error handling can be added here
     } finally {
+      console.log('🧹 Limpando dados locais (token e user_data)');
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
+      console.log('✅ Logout local concluído');
     }
   },
 

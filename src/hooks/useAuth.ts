@@ -8,7 +8,7 @@ export interface UseAuthReturn {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<AuthResponse>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -67,9 +67,20 @@ export function useAuth(): UseAuthReturn {
     }
   };
 
-  const logout = () => {
-    authService.logout();
-    setUser(null);
+  const logout = async () => {
+    console.log('🎯 useAuth: Iniciando logout');
+    setIsLoading(true);
+    try {
+      await authService.logout();
+      console.log('🎯 useAuth: Logout concluído, limpando estado');
+      setUser(null);
+    } catch (error) {
+      console.error('🎯 useAuth: Erro no logout:', error);
+      // Mesmo com erro, limpar estado local
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const refreshUser = async () => {
