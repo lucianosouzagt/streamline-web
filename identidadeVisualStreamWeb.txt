@@ -1,0 +1,87 @@
+🎨 Paleta de Cores — “Streamline Blue Fusion”
+Categoria	Cor	HEX	Uso Principal
+Primária	Azul Elétrico	#2563EB	Botões principais, links, ícones ativos
+Secundária	Azul-Céu Claro	#3B82F6	Destaques, bordas ativas, hover states
+Acento	Verde Limão Suave	#22C55E	Status “ativo”, sucesso, progresso
+Atenção	Amarelo Dourado	#FACC15	Avisos, alertas não críticos
+Erro	Vermelho Coral	#EF4444	Erros, falhas de validação
+Fundo Claro	Cinza-Azulado	#F8FAFC	Fundo geral (modo claro)
+Fundo Escuro	Azul-Noite	#0F172A	Fundo geral (modo escuro)
+Texto Primário	Grafite	#1E293B	Texto principal no modo claro
+Texto Secundário	Cinza-Ardósia	#475569	Subtítulos, descrições
+Texto Invertido	Cinza-Claro	#E2E8F0	Texto em fundo escuro
+Bordas/Divisores	Cinza-Azulado	#CBD5E1	Linhas sutis e separadores
+
+Sensação geral: foco, leveza e profissionalismo, com toque tecnológico.
+
+🌙 Modo Escuro (Dark Theme Complementar)
+Elemento	HEX	Aplicação
+Fundo Principal	#0F172A	Background global
+Cartões / Containers	#1E293B	Painéis e cards
+Borda / Divisores	#334155	Linhas e separadores
+Texto Principal	#F1F5F9	Textos em destaque
+Ícones / Acentos	#3B82F6	Ícones e highlights
+Hover / Ativo	#2563EB	Efeitos de foco/ação
+
+Dica: Use Tailwind’s theme.extend.colors para alternar facilmente entre ambos.
+
+🧩 Tipografia
+
+Primária: Inter ou DM Sans — modernas, legíveis e elegantes.
+
+Alternativa: Poppins (para títulos ou métricas no dashboard).
+
+Peso recomendado:
+
+700 → títulos e seções
+
+500 → labels e botões
+
+400 → corpo do texto
+
+Sugestão: use font-display: swap para performance e evite bloqueio de renderização.
+
+🧠 Identidade Visual e Estilo
+
+Conceito: “Gestão sem atrito” — fluxos fluidos, foco em clareza e produtividade.
+Estilo Visual: clean e modular — espaços brancos bem equilibrados, cartões leves, ícones minimalistas.
+
+Componentes-chave:
+
+Cards e Painéis: bordas arredondadas (rounded-2xl), sombras suaves (shadow-md hover:shadow-lg).
+
+Botões: alto contraste com animações sutis (transition-all duration-150).
+
+Inputs e forms: bordas finas, focus:ring-2 ring-primary.
+
+Ícones: Lucide React, traço de 1.5px, cores herdadas da paleta.
+
+Charts: use Recharts com tons primários (#2563EB, #22C55E, #FACC15).
+
+⚡ Moodboard Conceitual (para o designer/UI)
+
+Inspiração: Linear.app, Notion, ClickUp.
+
+Personalidade: ágil, sofisticado, organizado.
+
+Forma predominante: cantos levemente arredondados e ícones de linhas finas.
+
+Texturas: mínimas, priorizando contraste e legibilidade.
+
+Microinterações: feedback rápido em botões, cards e modais (sem exageros visuais).
+
+🧭 Identidade e Logotipo
+
+Nome: Streamline
+
+Slogan opcional: Organize. Execute. Evolua.
+
+Símbolo: fluxo contínuo (linha curva ou seta fluida).
+
+Logo principal:
+
+Ícone azul primário (#2563EB) + texto grafite (#1E293B)
+
+Versão dark: ícone azul-claro (#3B82F6) + texto cinza-claro (#E2E8F0)
+
+Tipografia no logo: Inter SemiBold ou DM Sans Bold, espaçamento de letras levemente aumentado.
