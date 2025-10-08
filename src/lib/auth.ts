@@ -30,14 +30,25 @@ export interface AuthResponse {
 export const authService = {
   // Login
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post('/auth/login', credentials);
-    const { user, token } = response.data;
+    console.log('🔐 Iniciando login com:', { email: credentials.email });
+    console.log('🌐 URL da API:', process.env.NEXT_PUBLIC_API_URL);
 
-    // Salvar token e dados do usuário
-    localStorage.setItem('auth_token', token);
-    localStorage.setItem('user_data', JSON.stringify(user));
+    try {
+      const response = await api.post('/auth/login', credentials);
+      console.log('✅ Resposta da API:', response.data);
 
-    return { user, token };
+      const { user, token } = response.data;
+
+      // Salvar token e dados do usuário
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user_data', JSON.stringify(user));
+
+      console.log('💾 Dados salvos no localStorage');
+      return { user, token };
+    } catch (error) {
+      console.error('❌ Erro no login:', error);
+      throw error;
+    }
   },
 
   // Registro
