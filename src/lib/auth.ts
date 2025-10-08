@@ -1,13 +1,4 @@
-import { api } from './api';
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string;
-  created_at: string;
-  updated_at: string;
-}
+import api from './api';
 
 export interface LoginCredentials {
   email: string;
@@ -18,7 +9,13 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
-  password_confirmation: string;
+}
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string;
 }
 
 export interface AuthResponse {
@@ -26,113 +23,70 @@ export interface AuthResponse {
   token: string;
 }
 
-// Funções de autenticação
 export const authService = {
-  // Login
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    console.log('🔐 Iniciando login com:', { email: credentials.email });
-    console.log('🌐 URL da API:', process.env.NEXT_PUBLIC_API_URL);
-
     try {
       const response = await api.post('/auth/login', credentials);
-      console.log('✅ Resposta da API:', response.data);
-
       const { user, token } = response.data;
 
-      // Salvar token e dados do usuário
+      // Store token and user data
       localStorage.setItem('auth_token', token);
       localStorage.setItem('user_data', JSON.stringify(user));
 
-      console.log('💾 Dados salvos no localStorage');
       return { user, token };
     } catch (error) {
-      console.error('❌ Erro no login:', error);
       throw error;
     }
   },
 
-  // Registro
   async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await api.post('/auth/register', data);
-    const { user, token } = response.data;
-
-    // Salvar token e dados do usuário
-    localStorage.setItem('auth_token', token);
-    localStorage.setItem('user_data', JSON.stringify(user));
-
-    return { user, token };
-  },
-
-  // Logout
-  async logout(): Promise<void> {
-    console.log('🚪 Iniciando processo de logout');
-
     try {
-      console.log('📤 Enviando requisição de logout para API');
-      await api.post('/auth/logout');
-      console.log('✅ Logout realizado com sucesso na API');
+      const response = await api.post('/auth/register', data);
+      const { user, token } = response.data;
+
+      // Store token and user data
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user_data', JSON.stringify(user));
+
+      return { user, token };
     } catch (error) {
-      console.warn(
-        '⚠️ Erro ao fazer logout na API, mas continuando limpeza local:',
-        error
-      );
-      // Mesmo se der erro na API, limpar dados locais
-    } finally {
-      console.log('🧹 Limpando dados locais (token e user_data)');
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_data');
-      console.log('✅ Logout local concluído');
+      throw error;
     }
   },
 
-  // Verificar se está autenticado
+  async me(): Promise<User> {
+    try {
+      const response = await api.get('/user');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  logout(): void {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+  },
+
   isAuthenticated(): boolean {
-    if (typeof window === 'undefined') return false;
-    return !!localStorage.getItem('auth_token');
+    const token = localStorage.getItem('auth_token');
+    return !!token;
   },
 
-  // Obter dados do usuário
-  getUser(): User | null {
-    if (typeof window === 'undefined') return null;
-    const userData = localStorage.getItem('user_data');
-    return userData ? JSON.parse(userData) : null;
-  },
-
-  // Obter token
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
     return localStorage.getItem('auth_token');
   },
 
-  // Recuperação de senha
-  forgotPassword: async (email: string): Promise<void> => {
-    try {
-      await api.post('/auth/forgot-password', { email });
-    } catch (error) {
-      // Error handling can be added here
-      throw error;
+  getUser(): User | null {
+    const userData = localStorage.getItem('user_data');
+    if (userData) {
+      try {
+        return JSON.parse(userData);
+      } catch {
+        return null;
+      }
     }
-  },
-
-  // Reset de senha
-  resetPassword: async (token: string, newPassword: string): Promise<void> => {
-    try {
-      await api.post('/auth/reset-password', { token, newPassword });
-    } catch (error) {
-      // Error handling can be added here
-      throw error;
-    }
-  },
-
-  // Obter dados atualizados do usuário
-  async me(): Promise<User> {
-    const response = await api.get('/auth/me');
-    const user = response.data;
-
-    // Atualizar dados locais
-    localStorage.setItem('user_data', JSON.stringify(user));
-
-    return user;
+    return null;
   },
 };
 

@@ -1,105 +1,113 @@
-import { useState, useEffect } from 'react';
-import { User, LoginCredentials, RegisterData, AuthResponse } from '@/types';
-import { authService } from '@/lib/auth';
+'use client';
 
-export interface UseAuthReturn {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<AuthResponse>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => Promise<void>;
-  refreshUser: () => Promise<void>;
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
 }
 
-export function useAuth(): UseAuthReturn {
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Verificar autenticação ao carregar
+  // Check if user is logged in on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      if (authService.isAuthenticated()) {
-        try {
-          const userData = await authService.me();
-          setUser(userData);
-        } catch {
-          // If token is invalid, clear it
-          authService.logout();
-          setUser(null);
-        }
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch {
+        // Invalid user data, clear storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       }
-      setIsLoading(false);
-    };
-
-    checkAuth();
+    }
+    setLoading(false);
   }, []);
 
-  const login = async (
-    credentials: LoginCredentials
-  ): Promise<AuthResponse> => {
-    console.log('🎯 useAuth: Iniciando processo de login');
-    setIsLoading(true);
+  const login = async (credentials: LoginCredentials) => {
     try {
-      const response = await authService.login(credentials);
-      console.log('🎯 useAuth: Login bem-sucedido, atualizando estado');
-      setUser(response.user);
-      return response;
-    } catch (error) {
-      console.error('🎯 useAuth: Erro no login:', error);
-      // Error handling can be added here
-      throw error;
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.post('/auth/login', {
+        email: credentials.email,
+        password: credentials.password
+      });
+      
+      // Store token and user data
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
+      
+      return response.data;
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Erro ao fazer login';
+      setError(errorMessage);
+      throw err;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const register = async (data: RegisterData) => {
-    setIsLoading(true);
+  const register = async (credentials: RegisterCredentials) => {
     try {
-      const response = await authService.register(data);
-      setUser(response.user);
-    } catch (error) {
-      // Error handling can be added here
-      throw error;
+      setLoading(true);
+      setError(null);
+      
+      const response = await api.post('/auth/register', {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password
+      });
+      
+      // Store token and user data
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
+      
+      return response.data;
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Erro ao criar conta';
+      setError(errorMessage);
+      throw err;
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const logout = async () => {
-    console.log('🎯 useAuth: Iniciando logout');
-    setIsLoading(true);
-    try {
-      await authService.logout();
-      console.log('🎯 useAuth: Logout concluído, limpando estado');
-      setUser(null);
-    } catch (error) {
-      console.error('🎯 useAuth: Erro no logout:', error);
-      // Mesmo com erro, limpar estado local
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
   };
 
-  const refreshUser = async () => {
-    try {
-      const userData = await authService.me();
-      setUser(userData);
-    } catch {
-      // Error handling can be added here
-      setUser(null);
-    }
-  };
+  const isAuthenticated = !!user;
 
   return {
     user,
-    isAuthenticated: !!user,
-    isLoading,
+    loading,
+    error,
     login,
     register,
     logout,
-    refreshUser,
+    isAuthenticated,
   };
-}
+};

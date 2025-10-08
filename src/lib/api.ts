@@ -2,8 +2,6 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-console.log('🔧 Configuração da API:', { API_URL });
-
 // Criar instância do axios
 export const api = axios.create({
   baseURL: API_URL,
@@ -21,16 +19,10 @@ api.interceptors.request.use(
     const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('🔑 Token adicionado à requisição');
     }
-    console.log(
-      '📤 Fazendo requisição para:',
-      `${config.baseURL || ''}${config.url || ''}`
-    );
     return config;
   },
   (error) => {
-    console.error('❌ Erro no interceptor de requisição:', error);
     return Promise.reject(error);
   }
 );
@@ -38,19 +30,11 @@ api.interceptors.request.use(
 // Interceptor para tratar respostas e erros
 api.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log('📥 Resposta recebida:', response.status, response.statusText);
     return response;
   },
   (error: AxiosError) => {
-    console.error(
-      '❌ Erro na resposta:',
-      error.response?.status,
-      error.response?.data
-    );
-
     // Se receber 401, redirecionar para página inicial (login)
     if (error.response?.status === 401) {
-      console.log('🚪 Token inválido, limpando dados e redirecionando...');
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
 
