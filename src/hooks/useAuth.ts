@@ -38,12 +38,15 @@ export function useAuth(): UseAuthReturn {
   const login = async (
     credentials: LoginCredentials
   ): Promise<AuthResponse> => {
+    console.log('🎯 useAuth: Iniciando processo de login');
     setIsLoading(true);
     try {
       const response = await authService.login(credentials);
+      console.log('🎯 useAuth: Login bem-sucedido, atualizando estado');
       setUser(response.user);
       return response;
     } catch (error) {
+      console.error('🎯 useAuth: Erro no login:', error);
       // Error handling can be added here
       throw error;
     } finally {
