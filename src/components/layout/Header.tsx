@@ -30,7 +30,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
   const handleLogout = async () => {
     await logout();
-    router.push('/login');
+    router.push('/');
   };
 
   const handleSearch = (e: React.FormEvent) => {
