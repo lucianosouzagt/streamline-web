@@ -1,369 +1,143 @@
 'use client';
 
 import { MainLayout } from '@/components/layout/MainLayout';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ProfileInfo } from '@/components/profile/ProfileInfo';
+import { ProfileStats } from '@/components/profile/ProfileStats';
+import { ChangePasswordForm } from '@/components/profile/ChangePasswordForm';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Briefcase,
-  Edit,
-  Save,
-  Camera,
+import { Badge } from '@/components/ui/badge';
+import { 
+  User, 
+  Settings, 
+  Bell, 
   Shield,
-  Bell,
-  Lock,
   Activity,
-  Clock,
-  CheckCircle2,
+  Clock
 } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
-// Mock user data
-const userData = {
-  id: 1,
-  name: 'João Silva',
-  email: 'joao.silva@company.com',
-  phone: '+55 11 99999-0001',
-  location: 'São Paulo, SP',
-  avatar: '/avatars/joao.jpg',
-  initials: 'JS',
-  role: 'Tech Lead Frontend',
-  department: 'Desenvolvimento',
-  joinDate: '2022-03-15',
-  bio: 'Desenvolvedor frontend especializado em React e TypeScript com mais de 5 anos de experiência. Apaixonado por criar interfaces intuitivas e performáticas.',
-  skills: [
-    'React',
-    'TypeScript',
-    'Next.js',
-    'Tailwind CSS',
-    'Node.js',
-    'GraphQL',
-  ],
-  stats: {
-    projectsCompleted: 12,
-    tasksCompleted: 156,
-    hoursWorked: 1240,
-    teamMembers: 5,
-  },
-  recentActivity: [
-    {
-      id: 1,
-      type: 'task_completed',
-      description: 'Concluiu a tarefa "Implementar autenticação JWT"',
-      date: '2024-02-08',
-      project: 'Sistema de E-commerce',
-    },
-    {
-      id: 2,
-      type: 'project_created',
-      description: 'Criou o projeto "Dashboard Analytics"',
-      date: '2024-02-07',
-      project: 'Dashboard Analytics',
-    },
-    {
-      id: 3,
-      type: 'team_joined',
-      description: 'Entrou no time de Desenvolvimento Frontend',
-      date: '2024-02-05',
-      project: null,
-    },
-    {
-      id: 4,
-      type: 'task_assigned',
-      description: 'Foi atribuído à tarefa "Design da tela de checkout"',
-      date: '2024-02-04',
-      project: 'Sistema de E-commerce',
-    },
-  ],
-};
 
-const getActivityIcon = (type: string) => {
-  switch (type) {
-    case 'task_completed':
-      return <CheckCircle2 className="h-4 w-4 text-green-600" />;
-    case 'project_created':
-      return <Briefcase className="h-4 w-4 text-blue-600" />;
-    case 'team_joined':
-      return <User className="h-4 w-4 text-purple-600" />;
-    case 'task_assigned':
-      return <Clock className="h-4 w-4 text-orange-600" />;
-    default:
-      return <Activity className="h-4 w-4 text-gray-500" />;
-  }
-};
 
 export default function ProfilePage() {
+  const { profile, userInfo, stats, isLoading, error } = useProfile();
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-destructive mb-4">Erro ao carregar perfil</h1>
+            <p className="text-muted-foreground">{error}</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Meu Perfil</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-3xl font-bold">Meu Perfil</h1>
+            <p className="text-muted-foreground mt-1">
               Gerencie suas informações pessoais e configurações
             </p>
           </div>
-          <Button>
-            <Edit className="mr-2 h-4 w-4" />
-            Editar Perfil
-          </Button>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {/* Profile Card */}
-          <div className="md:col-span-1">
+        {/* Estatísticas */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Estatísticas</h2>
+          <ProfileStats stats={stats} isLoading={isLoading} />
+        </div>
+
+        {/* Grid de Conteúdo */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Coluna Principal */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Informações do Perfil */}
+            <ProfileInfo userInfo={userInfo} isLoading={isLoading} />
+
+            {/* Atividades Recentes */}
             <Card>
-              <CardHeader className="text-center">
-                <div className="relative mx-auto">
-                  <Avatar className="mx-auto h-24 w-24">
-                    <AvatarImage src={userData.avatar} />
-                    <AvatarFallback className="text-2xl">
-                      {userData.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="absolute -right-2 -bottom-2 h-8 w-8 rounded-full"
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  <CardTitle className="text-xl">{userData.name}</CardTitle>
-                  <CardDescription>{userData.role}</CardDescription>
-                  <Badge variant="secondary">{userData.department}</Badge>
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  Atividades Recentes
+                </CardTitle>
               </CardHeader>
-
-              <CardContent className="space-y-4">
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <Mail className="text-muted-foreground h-4 w-4" />
-                    <span>{userData.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Phone className="text-muted-foreground h-4 w-4" />
-                    <span>{userData.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="text-muted-foreground h-4 w-4" />
-                    <span>{userData.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="text-muted-foreground h-4 w-4" />
-                    <span>Desde {userData.joinDate}</span>
-                  </div>
-                </div>
-
-                {/* Bio */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Sobre</Label>
-                  <p className="text-muted-foreground text-sm">
-                    {userData.bio}
-                  </p>
-                </div>
-
-                {/* Skills */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Habilidades</Label>
-                  <div className="flex flex-wrap gap-1">
-                    {userData.skills.map((skill) => (
-                      <Badge key={skill} variant="outline" className="text-xs">
-                        {skill}
-                      </Badge>
+              <CardContent>
+                {isLoading ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        <div className="h-8 w-8 bg-muted animate-pulse rounded-full" />
+                        <div className="flex-1">
+                          <div className="h-4 w-3/4 bg-muted animate-pulse rounded mb-1" />
+                          <div className="h-3 w-1/2 bg-muted animate-pulse rounded" />
+                        </div>
+                      </div>
                     ))}
                   </div>
-                </div>
+                ) : profile?.recent_activities && profile.recent_activities.length > 0 ? (
+                  <div className="space-y-4">
+                    {profile.recent_activities.slice(0, 5).map((activity) => (
+                      <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Activity className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{activity.description}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(activity.created_at).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">
+                    Nenhuma atividade recente encontrada.
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Content */}
-          <div className="space-y-6 md:col-span-2">
-            {/* Stats Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <Briefcase className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {userData.stats.projectsCompleted}
-                      </p>
-                      <p className="text-muted-foreground text-xs">Projetos</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Alterar Senha */}
+            <ChangePasswordForm />
 
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {userData.stats.tasksCompleted}
-                      </p>
-                      <p className="text-muted-foreground text-xs">Tarefas</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-5 w-5 text-orange-600" />
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {userData.stats.hoursWorked}
-                      </p>
-                      <p className="text-muted-foreground text-xs">Horas</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <User className="h-5 w-5 text-purple-600" />
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {userData.stats.teamMembers}
-                      </p>
-                      <p className="text-muted-foreground text-xs">Equipe</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Personal Information */}
+            {/* Ações Rápidas */}
             <Card>
               <CardHeader>
-                <CardTitle>Informações Pessoais</CardTitle>
-                <CardDescription>
-                  Atualize suas informações de contato e perfil
-                </CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  Ações Rápidas
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome Completo</Label>
-                    <Input id="name" defaultValue={userData.name} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      defaultValue={userData.email}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" defaultValue={userData.phone} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Localização</Label>
-                    <Input id="location" defaultValue={userData.location} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Sobre você</Label>
-                  <textarea
-                    id="bio"
-                    className="border-input bg-background focus:ring-ring min-h-[100px] w-full resize-none rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none"
-                    defaultValue={userData.bio}
-                  />
-                </div>
-                <Button>
-                  <Save className="mr-2 h-4 w-4" />
-                  Salvar Alterações
+              <CardContent className="space-y-3">
+                <Button variant="outline" className="w-full justify-start">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Configurações de Segurança
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Preferências de Notificação
+                </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <User className="h-4 w-4 mr-2" />
+                  Configurações de Privacidade
                 </Button>
               </CardContent>
             </Card>
-
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Atividade Recente</CardTitle>
-                <CardDescription>Suas últimas ações no sistema</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {userData.recentActivity.map((activity) => (
-                    <div
-                      key={activity.id}
-                      className="flex items-start space-x-3"
-                    >
-                      <div className="mt-1">
-                        {getActivityIcon(activity.type)}
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <p className="text-sm">{activity.description}</p>
-                        <div className="text-muted-foreground flex items-center space-x-2 text-xs">
-                          <span>{activity.date}</span>
-                          {activity.project && (
-                            <>
-                              <span>•</span>
-                              <span>{activity.project}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card className="cursor-pointer transition-shadow hover:shadow-md">
-                <CardContent className="p-4 text-center">
-                  <Shield className="mx-auto mb-2 h-8 w-8 text-blue-600" />
-                  <h3 className="font-medium">Segurança</h3>
-                  <p className="text-muted-foreground text-xs">Alterar senha</p>
-                </CardContent>
-              </Card>
-
-              <Card className="cursor-pointer transition-shadow hover:shadow-md">
-                <CardContent className="p-4 text-center">
-                  <Bell className="mx-auto mb-2 h-8 w-8 text-green-600" />
-                  <h3 className="font-medium">Notificações</h3>
-                  <p className="text-muted-foreground text-xs">
-                    Configurar alertas
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="cursor-pointer transition-shadow hover:shadow-md">
-                <CardContent className="p-4 text-center">
-                  <Lock className="mx-auto mb-2 h-8 w-8 text-orange-600" />
-                  <h3 className="font-medium">Privacidade</h3>
-                  <p className="text-muted-foreground text-xs">
-                    Gerenciar dados
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </div>
