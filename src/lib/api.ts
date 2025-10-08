@@ -48,18 +48,18 @@ api.interceptors.response.use(
       error.response?.data
     );
 
-    // Se receber 401, redirecionar para login
+    // Se receber 401, redirecionar para página inicial (login)
     if (error.response?.status === 401) {
       console.log('🚪 Token inválido, limpando dados e redirecionando...');
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
 
-      // Só redireciona se não estiver já na página de login
+      // Só redireciona se não estiver já na página inicial
       if (
         typeof window !== 'undefined' &&
-        !window.location.pathname.includes('/login')
+        window.location.pathname !== '/'
       ) {
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
 

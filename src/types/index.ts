@@ -129,3 +129,43 @@ export interface Notification {
   message: string;
   duration?: number;
 }
+
+// Tipos para perfil do usuário
+export interface UserProfile extends User {
+  phone?: string;
+  location?: string;
+  bio?: string;
+  role?: string;
+  department?: string;
+  join_date?: string;
+  skills?: string[];
+}
+
+export interface UserStats {
+  projects_count: number;
+  tasks_count: number;
+  completed_tasks_count: number;
+  teams_count: number;
+  hours_worked?: number;
+}
+
+export interface ProfileData {
+  user: UserProfile;
+  stats: UserStats;
+  recent_activities: Activity[];
+}
+
+export interface ChangePasswordData {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  bio?: string;
+  skills?: string[];
+}
